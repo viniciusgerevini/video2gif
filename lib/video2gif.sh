@@ -3,6 +3,7 @@ set -e
 
 delay_between_frames=3
 frame_rate=10
+version="1.0.0"
 
 get_output_filename() {
   local file=$1
@@ -12,16 +13,25 @@ get_output_filename() {
 
 print_usage() {
   echo ""
-  echo "usage:"
+  echo "usage: video2gif [options] <input file>"
+  echo ""
+  echo "examples:"
   echo "  video2gif input.mov"
   echo "  video2gif -s 900x600 input.mov"
   echo "  video2gif -o output.gif input.mov"
-  echo "  video2gif -o out.gif -s 900x600 -d 3 -r 10 input.mov"
+  echo "  video2gif -o out.gif -i input.mov"
+  echo ""
   echo "options:"
-  echo "  -o    output filename. Default: [input].gif"
-  echo "  -s    size. e.g 600x400. Default: same as video size"
-  echo "  -d    delay between frames in hundredths of a second. Default: 3"
-  echo "  -r    video frame rate. Default: 10"
+  echo "  -s, --size     size. e.g 600x400. Default: same as video size"
+  echo "  -o, --output   output file name. Default: [input].gif."
+  echo "  -i, --input    input file."
+  echo "  -h, --help     print this help message."
+  echo "  -v, --version  print version."
+  echo ""
+  echo "extra options: "
+  echo "  -fr, --video-frame-rate    video frame rate. Used by ffmpeg. Default: 10."
+  echo "  -d, --gif-frame-duration   delay/duration of each Gif frame in hundredths of a second. Default: 3."
+  echo ""
 }
 
 print_help() {
@@ -31,50 +41,101 @@ print_help() {
   print_usage
 }
 
-while getopts ":s:o:d:h" opt; do
-  case $opt in
-    s)
-      output_size=$OPTARG
-      ;;
-    o)
-      output_filename=$OPTARG
-      ;;
-    d)
-      delay_between_frames=$OPTARG
-      ;;
-    r)
-      frame_rate=$OPTARG
-      ;;
-    h)
+print_version() {
+  echo "video2gif $version"
+}
+
+check_argument() {
+  if [ -z "$2" ]
+  then
+    echo "value for '$1' not provided" >&2
+    exit 1
+  fi
+}
+
+while [ "$#" -gt 0 ]
+do
+  case "$1" in
+    -h|--help)
       print_help
       exit 0
       ;;
-    \?)
-      echo "invalid option: -$OPTARG" >&2
+    -v|--version)
+      print_version
+      exit 0
+      ;;
+    -i|--input)
+      input_file="$2"
+      check_argument $1 $2
+      shift
+      shift
+      ;;
+    -o|--output)
+      output_file="$2"
+      check_argument $1 $2
+      shift
+      shift
+      ;;
+    -s|--size)
+      output_size="$2"
+      check_argument $1 $2
+      shift
+      shift
+      ;;
+    -d|--gif-frame-duration)
+      delay_between_frames="$2"
+      check_argument $1 $2
+      shift
+      shift
+      ;;
+    -fr|--video-frame-rate)
+      frame_rate="$2"
+      check_argument $1 $2
+      shift
+      shift
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "Invalid option '$1'." >&2
       print_usage
       exit 1
       ;;
-    :)
-      echo "option -$OPTARG requires an argument." >&2
-      print_usage
-      exit 1
-      ;;
+    *) break;;
   esac
 done
-shift $((OPTIND -1))
 
-if [ -z "$@" ]
+if [ "$#" -eq 0 ] && [ -z "$input_file" ]
 then
+  echo "input not provided" >&2
+  echo ""
   print_help
   exit 1
 fi
 
-for file in "$@"
+if [ -n "$input_file" ]
+then
+  input_files="$input_file $@"
+else
+  input_files=$@
+fi
+
+if [ "$#" -gt 1 ] && [ -n "$output_file" ]
+then
+  echo "you can't set output name when more than one input provided" >&2
+  echo ""
+  exit 1
+fi
+
+for file in $input_files
 do
-  echo $output_filename
-  if [ -z "$output_filename" ]
+  if [ -z "$output_file" ]
   then
     output_filename=$(get_output_filename $file)
+  else
+    output_filename=$output_file
   fi
 
   if [ -n "$output_size" ]
@@ -82,8 +143,12 @@ do
     output_size_parameter="-s $output_size"
   fi
 
-  echo "Converting $file"
+  echo "converting $file to $output_filename..."
+
   ffmpeg -i $file $output_size_parameter -r $frame_rate -f gif - | \
-  gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename
+  gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename \
+
+  echo "$file converted"
+  echo ""
 done
 

@@ -9,6 +9,9 @@ docker run --rm -v $(pwd):/tmp vgerevini/video2gif input.mov
 ## Command options 
 
 ```text
+video2gif [OPTIONS] [files...]
+
+
 -s, --size         size. e.g 600x400. Default: same as video size
 -o, --output       output file name. Default: [input].gif.
 -i, --input        input file.
@@ -24,9 +27,9 @@ docker run --rm -v $(pwd):/tmp vgerevini/video2gif input.mov
 
 Note: 
 
--s, -fr, ts and te are used on ffmpeg, possible values on: [https://ffmpeg.org/ffmpeg.html#toc-Video-Options]
+-s, -fr, -ts and -te are used by ffmpeg, possible values on: [https://ffmpeg.org/ffmpeg.html#toc-Video-Options]
 
--d is used on gifsicle, possible values on: [https://www.lcdf.org/gifsicle/man.html]
+-d is used by gifsicle, possible values on: [https://www.lcdf.org/gifsicle/man.html]
 
 ## Usage
 

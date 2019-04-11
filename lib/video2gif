@@ -33,7 +33,7 @@ print_usage() {
   echo "  video2gif -s 900x600 input.mov"
   echo "  video2gif -o output.gif input.mov"
   echo "  video2gif -o out.gif -i input.mov"
-  echo "  video2gif --start-time 00:20:00 --end-time 00:20:30 input.mov"
+  echo "  video2gif --start-time 20:00 --end-time 20:30 input.mov"
   echo ""
 }
 

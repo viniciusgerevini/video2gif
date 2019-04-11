@@ -20,11 +20,14 @@ print_usage() {
   echo "  video2gif -s 900x600 input.mov"
   echo "  video2gif -o output.gif input.mov"
   echo "  video2gif -o out.gif -i input.mov"
+  echo "  video2gif --start-time 00:20:00 --end-time 10 input.mov"
   echo ""
   echo "options:"
   echo "  -s, --size     size. e.g 600x400. Default: same as video size"
   echo "  -o, --output   output file name. Default: [input].gif."
   echo "  -i, --input    input file."
+  echo "  -ts, --start-time  time from video to start gif. Seconds or HH:mm:ss. Default: start of the video"
+  echo "  -te, --end-time    time (relative to start time) to stop gif. Seconds or HH:mm:ss. Default: end of the video"
   echo "  -h, --help     print this help message."
   echo "  -v, --version  print version."
   echo ""
@@ -94,6 +97,18 @@ do
       shift
       shift
       ;;
+    -ts|--start-time)
+      start_time="$2"
+      check_argument $1 $2
+      shift
+      shift
+      ;;
+    -te|--end-time)
+      gif_duration="$2"
+      check_argument $1 $2
+      shift
+      shift
+      ;;
     --)
       shift
       break
@@ -143,12 +158,23 @@ do
     output_size_parameter="-s $output_size"
   fi
 
+  if [ -n "$start_time" ]
+  then
+    start_time_parameter="-ss $start_time"
+  fi
+
+  if [ -n "$gif_duration" ]
+  then
+    gif_duration_parameter="-t $gif_duration"
+  fi
+
   echo "converting $file to $output_filename..."
 
-  ffmpeg -i $file $output_size_parameter -r $frame_rate -f gif - | \
-  gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename \
+  ffmpeg $start_time_parameter -i $file $output_size_parameter -r $frame_rate -f gif $gif_duration_parameter - | \
+  gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename
 
-  echo "$file converted"
+  echo ""
+  echo -e "SUCCESS: $file converted"
   echo ""
 done
 

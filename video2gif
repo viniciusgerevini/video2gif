@@ -182,31 +182,24 @@ if [ "$#" -gt 1 ] || ([ "$#" -gt 0 ] && [ ! -z "$input_file" ]); then
   exit 1
 fi
 
-if [ -z "$input_file" ]; then
-  input_file=$@
-fi
-
-if [ -z "$output_file" ]; then
-  output_filename=$(get_output_filename $input_file)
-else
-  output_filename=$output_file
-fi
+[ -z "$input_file" ] && input_file=$@
+[ -z "$output_file" ] && output_file=$(get_output_filename $input_file)
 
 if [ -x "$(command -v ffmpeg)" ] && [ -x "$(command -v gifsicle)" ]; then
   [ -n "$output_size" ] && output_size_parameter="-s $output_size"
   [ -n "$start_time" ] && start_time_parameter="-ss $start_time"
   [ -n "$end_time" ] && end_time_parameter="-to $end_time"
 
-  echo "converting $input_file to $output_filename..."
+  echo "converting $input_file to $output_file..."
 
   ffmpeg $start_time_parameter $end_time_parameter \
     -i $input_file $output_size_parameter -r $frame_rate -f gif  - | \
-    gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename
+    gifsicle --optimize=3 --delay=$delay_between_frames > $output_file
 
   printf "\nSUCCESS: $input_file converted\n\n"
 
 elif [ -x "$(command -v docker)" ]; then
-  handle_with_docker $input_file $output_filename $all_parameters
+  handle_with_docker $input_file $output_file $all_parameters
 else
   print_error "couldn't find required dependencies. \nthis script requires docker OR ffmpeg and gifsicle.\n"
   exit 1

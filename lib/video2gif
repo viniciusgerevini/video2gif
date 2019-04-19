@@ -11,6 +11,11 @@ get_output_filename() {
   echo "${filename%%.*}.gif"
 }
 
+get_absolute_path() {
+  local file=$1
+  echo $(cd $(dirname $file) 2> /dev/null && pwd)
+}
+
 print_usage() {
   echo ""
   echo "usage: video2gif [options] <input file>"
@@ -53,6 +58,52 @@ check_argument() {
     exit 1
   fi
 }
+
+handle_with_docker() {
+  input_file=$1
+  output_file=$2
+  shift
+  shift
+
+  while [ "$#" -gt 0 ]
+  do
+    case "$1" in
+      -i|--input|-o|--output)
+        shift
+        shift
+        ;;
+      -*)
+        parameters="$parameters $1 $2" 
+        shift
+        shift
+        ;;
+      *) break;;
+    esac
+  done
+
+  input_dirname=$(get_absolute_path $input_file)
+  output_dirname=$(get_absolute_path $output_file)
+
+  if [ -z "$input_dirname" ]
+  then
+    echo "input file ${input_file} does not exist"
+    exit 1
+  fi
+
+  if [ -z "$output_dirname" ]
+  then
+    echo "output directory for ${output_file} does not exist"
+    exit 1
+  fi
+
+  docker run --rm \
+    -v ${output_dirname}:'/tmp/out' \
+    -v ${input_dirname}:'/tmp/in' \
+    vgerevini/video2gif:${version} \
+    -o "/tmp/out/$(basename $output_file)" -i "/tmp/in/$(basename $input_file)" $parameters
+}
+
+all_parameters=$@
 
 while [ "$#" -gt 0 ]
 do
@@ -148,27 +199,37 @@ else
   output_filename=$output_file
 fi
 
-if [ -n "$output_size" ]
-then
-  output_size_parameter="-s $output_size"
+if [ -x "$(command -v ffmpeg)" ] && [ -x "$(command -v gifsicle)" ]; then
+  echo 'using ffmpeg + gifsicle'
+  if [ -n "$output_size" ]
+  then
+    output_size_parameter="-s $output_size"
+  fi
+
+  if [ -n "$start_time" ]
+  then
+    start_time_parameter="-ss $start_time"
+  fi
+
+  if [ -n "$end_time" ]
+  then
+    end_time_parameter="-to $end_time"
+  fi
+
+  echo "converting $input_file to $output_filename..."
+
+  ffmpeg $start_time_parameter $end_time_parameter -i $input_file $output_size_parameter -r $frame_rate -f gif  - | \
+  gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename
+
+  echo ""
+  echo "SUCCESS: $input_file converted"
+  echo ""
+elif [ -x "$(command -v docker)" ]; then
+  echo "using docker with image ${version}"
+  handle_with_docker $input_file $output_filename $all_parameters
+else
+  echo "couldn't find required dependencies."
+  echo "this script requires docker OR ffmpeg and gifsicle."
+  exit 1
 fi
-
-if [ -n "$start_time" ]
-then
-  start_time_parameter="-ss $start_time"
-fi
-
-if [ -n "$end_time" ]
-then
-  end_time_parameter="-to $end_time"
-fi
-
-echo "converting $input_file to $output_filename..."
-
-ffmpeg $start_time_parameter $end_time_parameter -i $input_file $output_size_parameter -r $frame_rate -f gif  - | \
-gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename
-
-echo ""
-echo "SUCCESS: $input_file converted"
-echo ""
 

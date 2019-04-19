@@ -136,44 +136,39 @@ then
   exit 1
 fi
 
-if [ -n "$input_file" ]
+if [ -z "$input_file" ]
 then
-  input_files="$input_file $@"
-else
-  input_files=$@
+  input_file=$@
 fi
 
-for file in $input_files
-do
-  if [ -z "$output_file" ]
-  then
-    output_filename=$(get_output_filename $file)
-  else
-    output_filename=$output_file
-  fi
+if [ -z "$output_file" ]
+then
+  output_filename=$(get_output_filename $input_file)
+else
+  output_filename=$output_file
+fi
 
-  if [ -n "$output_size" ]
-  then
-    output_size_parameter="-s $output_size"
-  fi
+if [ -n "$output_size" ]
+then
+  output_size_parameter="-s $output_size"
+fi
 
-  if [ -n "$start_time" ]
-  then
-    start_time_parameter="-ss $start_time"
-  fi
+if [ -n "$start_time" ]
+then
+  start_time_parameter="-ss $start_time"
+fi
 
-  if [ -n "$end_time" ]
-  then
-    end_time_parameter="-to $end_time"
-  fi
+if [ -n "$end_time" ]
+then
+  end_time_parameter="-to $end_time"
+fi
 
-  echo "converting $file to $output_filename..."
+echo "converting $input_file to $output_filename..."
 
-  ffmpeg $start_time_parameter $end_time_parameter -i $file $output_size_parameter -r $frame_rate -f gif  - | \
-  gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename
+ffmpeg $start_time_parameter $end_time_parameter -i $input_file $output_size_parameter -r $frame_rate -f gif  - | \
+gifsicle --optimize=3 --delay=$delay_between_frames > $output_filename
 
-  echo ""
-  echo -e "SUCCESS: $file converted"
-  echo ""
-done
+echo ""
+echo "SUCCESS: $input_file converted"
+echo ""
 

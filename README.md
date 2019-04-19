@@ -9,7 +9,7 @@ docker run --rm -v $(pwd):/tmp vgerevini/video2gif input.mov
 ## Command options 
 
 ```text
-video2gif [OPTIONS] [files...]
+video2gif [OPTIONS] [input file]
 
 
 -s, --size         size. e.g 600x400. Default: same as video size

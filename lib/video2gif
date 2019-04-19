@@ -137,10 +137,11 @@ else
   input_files=$@
 fi
 
-if [ "$#" -gt 1 ] && [ -n "$output_file" ]
+if [ "$#" -gt 1 ]
 then
-  echo "you can't set output name when more than one input provided" >&2
+  echo "command doesn't accept multiple inputs" >&2
   echo ""
+  print_help
   exit 1
 fi
 

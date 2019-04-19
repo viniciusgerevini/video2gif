@@ -19,12 +19,9 @@ video2gif [OPTIONS] [input file]
 -te, --end-time    time position from video to stop gif. Seconds or HH:mm:ss. Default: end of the video
 -h, --help         print help message.
 -v, --version      print version.
-  
-#extra options: 
--fr, --video-frame-rate    video frame rate. Used by ffmpeg. Default: 10.
 -d, --gif-frame-duration   delay/duration of each Gif frame in hundredths of a second. Default: 3.
+-fr, --video-frame-rate    video frame rate. Less frames generate smaller gifs. Used by ffmpeg. Default: 10.
 ```
-
 Note: 
 
 -s, -fr, -ts and -te are used by ffmpeg, possible values on: [https://ffmpeg.org/ffmpeg.html#toc-Video-Options]
@@ -60,9 +57,9 @@ video2gif --starting-time 2:45 --end-time 3:00 input.mov
 video2gif -ts 2:45 -te 3:00 input.mov
 ```
 
-create gifs for multiple inputs with size of 300x100
+create gif with size of 300x100
 ```sh
-video2gif -s 300x100 input1.mov input2.mpeg input3.mov
+video2gif -s 300x100 input.mpeg
 ```
 
 

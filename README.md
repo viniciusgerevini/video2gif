@@ -1,10 +1,28 @@
 # video2gif
 
-a dockerised helper for converting video to gif using ffmpeg and gifsicle.
+a dockerised helper for converting videos to gif using ffmpeg and gifsicle.
+
+## Installation and usage
+
+### using as a script
+
+Download `./video2gif` and create an alias in your terminal or move it to `/usr/bin`.
+
+If you have `ffmpeg` and `gifsicle` installed this script will use them.
+Otherwise it will download the proper docker image in the first run.
+
+As long as you keep the docker image the script should behave as any other native command.
+
+```sh
+video2gif --help
+```
+
+### using as a docker image
 
 ```sh
 docker run --rm -v $(pwd):/tmp vgerevini/video2gif input.mov
 ```
+__caveat__: you can't reference files outside your mounted directory.
 
 ## Command options 
 
@@ -28,26 +46,6 @@ Note:
 
 -d is used by gifsicle, possible values on: [https://www.lcdf.org/gifsicle/man.html]
 
-## Usage
-
-### Using the docker image 
-
-```sh
-docker run --rm -v $(pwd):/tmp vgerevini/video2gif -o output.gif input.mov
-```
-__pro__: Hassle free. Just run the command and everything is fine.
-
-__caveat__: as your current directory is mounted inside the docker image you can't use locations that are not nested in your current folder as input or output.
-
-_tip: to avoid having to type the whole command everytime you can create an alias in your terminal:_
-```sh
-alias video2gif='docker run --rm -v $(pwd):/tmp vgerevini/video2gif'
-```
-
-### Using your local ffmpeg and gifsicle
-
-If you already have ffmpeg and gifsicle installed in your system and you prefer to use them instead of a docker image you can copy the script located on `./lib/video2gif`. It should work with no problems on Linux and MacOS.
-
 ## Examples:
 
 creates gif from 2:45 to 3:00
@@ -62,4 +60,7 @@ create gif with size of 300x100
 video2gif -s 300x100 input.mpeg
 ```
 
-
+create gif with less frames (as a side effect you get smaller file size)
+```sh
+video2gif -fr 5 input.mov
+```

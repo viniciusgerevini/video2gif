@@ -3,7 +3,7 @@ set -e
 
 delay_between_frames=3
 frame_rate=10
-version="1.2.1"
+version="1.2.2"
 
 get_output_filename() {
   local file=$1
@@ -12,8 +12,9 @@ get_output_filename() {
 }
 
 get_absolute_path() {
-  local file=$1
-  echo $(cd $(dirname $file) 2> /dev/null && pwd)
+  local file="$1"
+  local directory=$(dirname "$file" 2> /dev/null)
+  echo $(cd "$directory" 2> /dev/null && pwd)
 }
 
 print_usage() {
@@ -88,24 +89,27 @@ handle_with_docker() {
     esac
   done
 
-  input_dirname=$(get_absolute_path $input_file)
-  output_dirname=$(get_absolute_path $output_file)
+  input_dirname=$(get_absolute_path "$input_file")
+  output_dirname=$(get_absolute_path "$output_file")
 
   if [ -z "$input_dirname" ]; then
-    print_error "input file ${input_file} does not exist"
+    print_error "input file '${input_file}' does not exist"
     exit 1
   fi
 
   if [ -z "$output_dirname" ]; then
-    print_error "output directory for ${output_file} does not exist"
+    print_error "output directory for '${output_file}' does not exist"
     exit 1
   fi
 
+  output_filename=$(basename "$output_file")
+  input_filename=$(basename "$input_file")
+
   docker run --rm \
-    -v ${output_dirname}:'/tmp/out' \
-    -v ${input_dirname}:'/tmp/in' \
+    -v "${output_dirname}":'/tmp/out' \
+    -v "${input_dirname}":'/tmp/in' \
     vgerevini/video2gif:${version} \
-    -o "/tmp/out/$(basename $output_file)" -i "/tmp/in/$(basename $input_file)" $parameters
+    -o "/tmp/out/$output_filename" -i "/tmp/in/$input_filename" $parameters
 }
 
 all_parameters=$@
@@ -121,13 +125,13 @@ while [ "$#" -gt 0 ]; do
       ;;
     -i|--input)
       input_file="$2"
-      check_argument $1 $2
+      check_argument $1 "$2"
       shift
       shift
       ;;
     -o|--output)
       output_file="$2"
-      check_argument $1 $2
+      check_argument $1 "$2"
       shift
       shift
       ;;
@@ -187,23 +191,23 @@ if [ "$#" -gt 1 ] || ([ "$#" -gt 0 ] && [ ! -z "$input_file" ]); then
 fi
 
 [ -z "$input_file" ] && input_file=$@
-[ -z "$output_file" ] && output_file=$(get_output_filename $input_file)
+[ -z "$output_file" ] && output_file=$(get_output_filename "$input_file")
 
 if [ -x "$(command -v ffmpeg)" ] && [ -x "$(command -v gifsicle)" ]; then
   [ -n "$output_size" ] && output_size_parameter="-s $output_size"
   [ -n "$start_time" ] && start_time_parameter="-ss $start_time"
   [ -n "$end_time" ] && end_time_parameter="-to $end_time"
 
-  echo "converting $input_file to $output_file..."
+  echo "converting '$input_file' to '$output_file'..."
 
   ffmpeg $start_time_parameter $end_time_parameter \
-    -i $input_file $output_size_parameter -r $frame_rate -f gif  - | \
-    gifsicle --optimize=3 --delay=$delay_between_frames > $output_file
+    -i "$input_file" $output_size_parameter -r $frame_rate -f gif  - | \
+    gifsicle --optimize=3 --delay=$delay_between_frames > "$output_file"
 
-  printf "\nSUCCESS: $input_file converted\n\n"
+  printf "\nSUCCESS: '$input_file' converted\n\n"
 
 elif [ -x "$(command -v docker)" ]; then
-  handle_with_docker $input_file $output_file $all_parameters
+  handle_with_docker "$input_file" "$output_file" $all_parameters
 else
   print_error "couldn't find required dependencies. \nthis script requires docker OR ffmpeg and gifsicle.\n"
   exit 1

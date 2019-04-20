@@ -32,19 +32,19 @@ To **install** or **update** video2gif use cURL or Wget:
 cURL
 ```sh
 # bash
-curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | bash
+curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.2/install.sh | bash
 
 # zsh
-curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | zsh
+curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.2/install.sh | zsh
 ```
 
 Wget:
 ```sh
 # bash
-wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.2/install.sh | bash
 
 # zsh
-wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | zsh
+wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.2/install.sh | zsh
 ```
 
 This script will install and add a video2gif alias to your profile configuration.

@@ -6,12 +6,29 @@ a dockerised helper for converting videos to gif using ffmpeg and gifsicle.
 
 ### using as a script
 
-Download `./video2gif` and create an alias in your terminal or move it to `/usr/bin`.
+To **install** or **update** video2gif use cURL or Wget:
 
-If you have `ffmpeg` and `gifsicle` installed this script will use them.
-Otherwise it will download the proper docker image in the first run.
+cURL
+```sh
+# bash
+curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | bash
 
-As long as you keep the docker image the script should behave as any other native command.
+# zsh
+curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | zsh
+```
+
+Wget:
+```sh
+# bash
+wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | bash
+
+# zsh
+curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | zsh
+```
+
+This script will install and add a video2gif alias to your profile configuration.
+
+video2gif will try to use your local `ffmpeg` and `gifsicle` if installed, otherwise it will download the proper docker image on the first run.
 
 ```sh
 video2gif --help

@@ -3,7 +3,7 @@ set -e
 
 delay_between_frames=3
 frame_rate=10
-version="1.0.1"
+version="1.2.1"
 
 get_output_filename() {
   local file=$1
@@ -47,12 +47,16 @@ print_help() {
   print_usage
 }
 
+print_short_help() {
+  printf "See 'video2gif --help'\\n"
+}
+
 print_version() {
-  echo "video2gif $version"
+  printf "video2gif $version\\n"
 }
 
 print_error() {
-  printf "\nerror: %s\n\n" "$@" >&2
+  printf "video2gif: %s\\n" "$@" >&2
 }
 
 check_argument() {
@@ -163,7 +167,7 @@ while [ "$#" -gt 0 ]; do
       ;;
     -*)
       print_error "invalid option '$1'."
-      print_usage
+      print_short_help
       exit 1
       ;;
     *) break;;
@@ -172,13 +176,13 @@ done
 
 if [ "$#" -eq 0 ] && [ -z "$input_file" ]; then
   print_error "input not provided"
-  print_help
+  print_short_help
   exit 1
 fi
 
 if [ "$#" -gt 1 ] || ([ "$#" -gt 0 ] && [ ! -z "$input_file" ]); then
   print_error "command doesn't accept multiple inputs"
-  print_help
+  print_short_help
   exit 1
 fi
 

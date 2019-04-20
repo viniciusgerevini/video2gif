@@ -2,7 +2,7 @@
 
 { # this ensures the entire script is downloaded #
 v2g_latest_version() {
-  echo '1.2.0'
+  echo '1.2.1'
 }
 
 v2g_script_url() {

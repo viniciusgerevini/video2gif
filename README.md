@@ -2,45 +2,6 @@
 
 a dockerised helper for converting videos to gif using ffmpeg and gifsicle.
 
-## Installation and usage
-
-### using as a script
-
-To **install** or **update** video2gif use cURL or Wget:
-
-cURL
-```sh
-# bash
-curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | bash
-
-# zsh
-curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | zsh
-```
-
-Wget:
-```sh
-# bash
-wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | bash
-
-# zsh
-curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.0/install.sh | zsh
-```
-
-This script will install and add a video2gif alias to your profile configuration.
-
-video2gif will try to use your local `ffmpeg` and `gifsicle` if installed, otherwise it will download the proper docker image on the first run.
-
-```sh
-video2gif --help
-```
-
-### using as a docker image
-
-```sh
-docker run --rm -v $(pwd):/tmp vgerevini/video2gif input.mov
-```
-__caveat__: you can't reference files outside your mounted directory.
-
 ## Command options 
 
 ```text
@@ -62,6 +23,46 @@ Note:
 -s, -fr, -ts and -te are used by ffmpeg, possible values on: [https://ffmpeg.org/ffmpeg.html#toc-Video-Options]
 
 -d is used by gifsicle, possible values on: [https://www.lcdf.org/gifsicle/man.html]
+
+
+## Installation and usage
+
+### using as a script
+
+To **install** or **update** video2gif use cURL or Wget:
+
+cURL
+```sh
+# bash
+curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | bash
+
+# zsh
+curl -o- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | zsh
+```
+
+Wget:
+```sh
+# bash
+wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | bash
+
+# zsh
+wget -qO- https://raw.githubusercontent.com/viniciusgerevini/video2gif/1.2.1/install.sh | zsh
+```
+
+This script will install and add a video2gif alias to your profile configuration.
+
+video2gif will try to use your local `ffmpeg` and `gifsicle` if installed, otherwise it will download the proper docker image on the first run.
+
+```sh
+video2gif --help
+```
+
+### using as a docker image
+
+```sh
+docker run --rm -v $(pwd):/tmp vgerevini/video2gif input.mov
+```
+__caveat__: you can't reference files outside your mounted directory.
 
 ## Examples:
 

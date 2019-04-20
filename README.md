@@ -27,8 +27,6 @@ Note:
 
 ## Installation and usage
 
-### using as a script
-
 To **install** or **update** video2gif use cURL or Wget:
 
 cURL
@@ -56,13 +54,6 @@ video2gif will try to use your local `ffmpeg` and `gifsicle` if installed, other
 ```sh
 video2gif --help
 ```
-
-### using as a docker image
-
-```sh
-docker run --rm -v $(pwd):/tmp vgerevini/video2gif input.mov
-```
-__caveat__: you can't reference files outside your mounted directory.
 
 ## Examples:
 
